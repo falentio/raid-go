@@ -29,7 +29,7 @@ var (
 func init() {
 	defaultRaid = NilRaid.
 		WithRandom().
-		WithPrefix("abl").
+		WithPrefix("nil").
 		WithMessage(0x7ff0)
 }
 
