@@ -23,13 +23,13 @@ var (
 )
 
 var (
-	ErrInvalidId = errors.New("raid: invalid rolas id")
+	ErrInvalidId = errors.New("raid: invalid raid id")
 )
 
 func init() {
 	defaultRaid = NilRaid.
 		WithRandom().
-		WithPrefix("ril").
+		WithPrefix("abl").
 		WithMessage(0x7ff0)
 }
 
