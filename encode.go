@@ -10,15 +10,12 @@ var (
 )
 
 func init() {
-	for i := range dec {
-		dec[i] = 0xff
-	}
 	for i, c := range []byte(enc) {
 		dec[byte(c)] = byte(i)
 	}
 }
 
-func encodePrefix(src, dst []byte) {
+func encodePrefix(dst, src []byte) {
 	_ = dst[2]
 	_ = src[1]
 	_ = enc[0x1f]
@@ -33,8 +30,8 @@ func encodeRaid(dst, src []byte) {
 	_ = src[19]
 	_ = enc[0x1f]
 
-	src[7] ^= src[17]
 	src[6] ^= src[16]
+	src[7] ^= src[17]
 
 	dst[31] = enc[src[19]&0x1f]
 	dst[30] = enc[(src[19]>>5|src[18]<<3)&0x1f]
@@ -71,4 +68,7 @@ func encodeRaid(dst, src []byte) {
 	dst[2] = enc[src[1]>>1&0x1f]
 	dst[1] = enc[(src[1]>>6|src[0]<<2)&0x1f]
 	dst[0] = enc[src[0]>>3&0x1f]
+
+	src[6] ^= src[16]
+	src[7] ^= src[17]
 }

@@ -6,6 +6,7 @@ import (
 	"database/sql/driver"
 	"encoding/binary"
 	"errors"
+	"io"
 	"sync"
 	"time"
 )
@@ -14,7 +15,7 @@ var (
 	NilRaid     = Raid{}
 	defaultRaid = Raid{}
 	timeOffset  = time.Date(2022, time.January, 0, 0, 0, 0, 0, time.Local)
-	bufferPool = sync.Pool{
+	bufferPool  = sync.Pool{
 		New: func() any {
 			b := make([]byte, 12)
 			return &b
@@ -29,7 +30,7 @@ var (
 func init() {
 	defaultRaid = NilRaid.
 		WithRandom().
-		WithPrefix("nil").
+		WithPrefix("axf").
 		WithMessage(0x7ff0)
 }
 
@@ -77,8 +78,7 @@ func (rr *Raid) updateRandoms() {
 	bptr := bufferPool.Get().(*[]byte)
 	defer bufferPool.Put(bptr)
 	b := *bptr
-	_, err := rand.Read(b)
-	if err != nil {
+	if _, err := io.ReadFull(rand.Reader, b); err != nil {
 		panic(err.Error())
 	}
 	rr[19] = b[11]
@@ -105,11 +105,12 @@ func (rr *Raid) setMessage(i uint16) {
 }
 
 func (rr *Raid) setPrefixByte(prefix []byte) {
-	if cap(prefix) < 3 {
-		prefix = append(prefix, 0, 0, 0)
+	if len(prefix) < 3 {
+		prefix = append(prefix, 0, 0, 0, 0)
 	}
-	p := make([]byte, 2)
-	decodePrefix(prefix, p)
+	p := make([]byte, 3)
+	decodePrefix(p, prefix)
+	rr[2] = p[2]
 	rr[1] = p[1]
 	rr[0] = p[0]
 }
@@ -168,11 +169,8 @@ func (rr Raid) Bytes() []byte {
 	return rr[:]
 }
 
-func (rr Raid) Encode() []byte {
-	b := make([]byte, 32)
-	encodeRaid(b, rr[:])
-	return b
-
+func (rr Raid) Encode(dst []byte) {
+	encodeRaid(dst, rr[:])
 }
 
 func (rr Raid) String() string {
@@ -183,7 +181,7 @@ func (rr Raid) String() string {
 
 func (rr Raid) Prefix() string {
 	p := make([]byte, 3)
-	encodePrefix(rr[0:2], p)
+	encodePrefix(p, rr[0:2])
 	return bytesToString(p)
 }
 
@@ -192,13 +190,8 @@ func (rr Raid) Time() time.Time {
 	return time.Unix(int64(s), 0)
 }
 
-func (rr Raid) Counter() uint16 {
-	c := binary.BigEndian.Uint16(rr[6:8])
-	return uint16(c)
-}
-
 func (rr Raid) Message() uint16 {
-	c := binary.BigEndian.Uint16(rr[8:10])
+	c := binary.BigEndian.Uint16(rr[6:8])
 	return uint16(c)
 }
 

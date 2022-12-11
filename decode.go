@@ -1,6 +1,6 @@
 package raid
 
-func decodePrefix(src, dst []byte) {
+func decodePrefix(dst, src []byte) {
 	_ = dst[1]
 	_ = src[2]
 	_ = dec[0xff]
@@ -38,6 +38,6 @@ func decodeRaid(dst, src []byte) {
 	dst[1] = dec[src[1]]<<6 | dec[src[2]]<<1 | dec[src[3]]>>4
 	dst[0] = dec[src[0]]<<3 | dec[src[1]]>>2
 
-	dst[7] ^= dst[17]
 	dst[6] ^= dst[16]
+	dst[7] ^= dst[17]
 }
