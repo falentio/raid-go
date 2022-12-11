@@ -13,7 +13,7 @@ func main() {
 	start := time.Now()
 	raids := make([]raid.Raid, 100000)
 	for i := 0; i < 100000; i++ {
-		raids[i] = raid.NewRaid().WithMessage(2131).WithPrefix("ppp")
+		raids[i] = raid.NewRaid().WithMessage(uint16(i & 0xffff)).WithPrefix("ppp")
 	}
 	finishCreate := time.Now()
 	for i := 0; i < 1000; i++ {

@@ -53,6 +53,7 @@ func TestRaid(t *testing.T) {
 		if rr.Prefix() != r.Prefix() {
 			t.Errorf("prefix changed from %s, parsed as %s", r.Prefix(), rr.Prefix())
 		}
+		t.Log(r.Time().String())
 
 		r2 := NewRaid()
 		if !r.Less(r2) {

@@ -187,7 +187,7 @@ func (rr Raid) Prefix() string {
 
 func (rr Raid) Time() time.Time {
 	s := binary.BigEndian.Uint32(rr[2:6])
-	return time.Unix(int64(s), 0)
+	return time.Unix(int64(s) + timeOffset.Unix(), 0)
 }
 
 func (rr Raid) Message() uint16 {
