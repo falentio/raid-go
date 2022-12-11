@@ -56,7 +56,6 @@ func TestRaid(t *testing.T) {
 		if !rr.Time().Equal(r.Time()) {
 			t.Errorf("time changed from %s, parsed as %s", r.Time(), rr.Time())
 		}
-		t.Log(r.Time().String())
 
 		r2 := NewRaid()
 		if !r.Less(r2) {
