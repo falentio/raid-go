@@ -6,6 +6,7 @@ import (
 	"database/sql/driver"
 	"encoding/binary"
 	"errors"
+	"fmt"
 	"io"
 	"sync"
 	"time"
@@ -34,7 +35,7 @@ func init() {
 		WithMessage(0x7ff0)
 }
 
-// Raid is 12 byte identifier.
+// Raid is 20 byte identifier.
 // 2 byte prefix -- enough for 3 characters in base32.
 // 4 byte unix seconds timestamp -- make id became sortable.
 // 2 byte message -- 16 bit message, masked with 15th and 16th byte.
@@ -154,6 +155,20 @@ func (rr *Raid) UnmarshallJSON(b []byte) error {
 		return ErrInvalidId
 	}
 	return rr.UnmarshallText(b[1:33])
+}
+
+func (rr *Raid) Scan(value any) error {
+	switch v := value.(type) {
+	case string:
+		rr.UnmarshallText(stringToBytes(v))
+	case []byte:
+		rr.UnmarshallText(v)
+	case nil:
+		*rr = NilRaid
+	default:
+		return fmt.Errorf("raid: scanning unsupported type %T", value)
+	}
+	return nil
 }
 
 func (rr Raid) Value() (driver.Value, error) {
