@@ -43,9 +43,7 @@ func init() {
 type Raid [20]byte
 
 func NewRaid() Raid {
-	rr := defaultRaid.WithRandom()
-	rr.setTimestamp(time.Now())
-	return rr
+	return defaultRaid.WithRandom().WithTimestampNow()
 }
 
 func RaidFromString(str string) (Raid, error) {
@@ -73,6 +71,15 @@ func (rr Raid) WithMessage(msg uint16) Raid {
 func (rr Raid) WithRandom() Raid {
 	rr.updateRandoms()
 	return rr
+}
+
+func (rr Raid) WithTimestamp(t time.Time) Raid {
+	rr.setTimestamp(t)
+	return rr
+}
+
+func (rr Raid) WithTimestampNow() Raid {
+	return rr.WithTimestamp(time.Now())
 }
 
 func (rr *Raid) updateRandoms() {
