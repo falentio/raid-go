@@ -48,7 +48,7 @@ func NewRaid() Raid {
 
 func RaidFromString(str string) (Raid, error) {
 	rr := &Raid{}
-	if err := rr.UnmarshallText(stringToBytes(str)); err != nil {
+	if err := rr.UnmarshalText(stringToBytes(str)); err != nil {
 		return NilRaid, err
 	}
 	return *rr, nil
@@ -161,15 +161,15 @@ func (rr *Raid) UnmarshalJSON(b []byte) error {
 	if len(b) != 34 {
 		return ErrInvalidId
 	}
-	return rr.UnmarshallText(b[1:33])
+	return rr.UnmarshalText(b[1:33])
 }
 
 func (rr *Raid) Scan(value any) error {
 	switch v := value.(type) {
 	case string:
-		rr.UnmarshallText(stringToBytes(v))
+		rr.UnmarshalText(stringToBytes(v))
 	case []byte:
-		rr.UnmarshallText(v)
+		rr.UnmarshalText(v)
 	case nil:
 		*rr = NilRaid
 	default:
