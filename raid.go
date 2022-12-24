@@ -123,13 +123,13 @@ func (rr *Raid) setPrefixByte(prefix []byte) {
 	rr[0] = p[0]
 }
 
-func (rr Raid) MarshallText() ([]byte, error) {
+func (rr Raid) MarshalText() ([]byte, error) {
 	b := make([]byte, 32)
 	encodeRaid(b, rr[:])
 	return b, nil
 }
 
-func (rr *Raid) UnmarshallText(b []byte) error {
+func (rr *Raid) UnmarshalText(b []byte) error {
 	if len(b) != 32 {
 		return ErrInvalidId
 	}
@@ -142,7 +142,7 @@ func (rr *Raid) UnmarshallText(b []byte) error {
 	return nil
 }
 
-func (rr Raid) MarshallJSON() ([]byte, error) {
+func (rr Raid) MarshalJSON() ([]byte, error) {
 	if rr == NilRaid {
 		return stringToBytes("null"), nil
 	}
@@ -153,7 +153,7 @@ func (rr Raid) MarshallJSON() ([]byte, error) {
 	return b, nil
 }
 
-func (rr *Raid) UnmarshallJSON(b []byte) error {
+func (rr *Raid) UnmarshalJSON(b []byte) error {
 	if bytesToString(b) == "null" {
 		*rr = NilRaid
 		return nil
