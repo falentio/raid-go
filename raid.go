@@ -3,8 +3,10 @@ package raid
 import (
 	"bytes"
 	"crypto/rand"
+	"database/sql"
 	"database/sql/driver"
 	"encoding/binary"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"io"
@@ -34,6 +36,12 @@ func init() {
 		WithPrefix("axf").
 		WithMessage(0x7ff0)
 }
+
+var _ driver.Valuer = defaultRaid
+var _ sql.Scanner = &defaultRaid
+var _ json.Marshaler = defaultRaid
+var _ json.Unmarshaler = &defaultRaid
+var _ fmt.Stringer = defaultRaid
 
 // Raid is 20 byte identifier.
 // 2 byte prefix -- enough for 3 characters in base32.
@@ -143,7 +151,7 @@ func (rr *Raid) UnmarshalText(b []byte) error {
 }
 
 func (rr Raid) MarshalJSON() ([]byte, error) {
-	if rr == NilRaid {
+	if rr.IsNil() {
 		return stringToBytes("null"), nil
 	}
 	b := make([]byte, 34)
@@ -179,7 +187,7 @@ func (rr *Raid) Scan(value any) error {
 }
 
 func (rr Raid) Value() (driver.Value, error) {
-	if rr == NilRaid {
+	if rr.IsNil() {
 		return nil, nil
 	}
 	b := make([]byte, 32)
@@ -224,3 +232,9 @@ func (rr Raid) Compare(r Raid) int {
 func (rr Raid) Less(r Raid) bool {
 	return rr.Compare(r) == -1
 }
+
+func (rr Raid) IsNil() bool {
+	return rr == NilRaid
+}
+
+func (rr Raid) IsZero() bool { return rr.IsNil() }
