@@ -179,7 +179,7 @@ func (rr *Raid) Scan(value any) error {
 }
 
 func (rr Raid) Value() (driver.Value, error) {
-	if rr == NewRaid() {
+	if rr == NilRaid {
 		return nil, nil
 	}
 	b := make([]byte, 32)
