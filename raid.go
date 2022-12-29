@@ -5,6 +5,7 @@ import (
 	"crypto/rand"
 	"database/sql"
 	"database/sql/driver"
+	"encoding"
 	"encoding/binary"
 	"encoding/json"
 	"errors"
@@ -42,6 +43,8 @@ var _ sql.Scanner = &defaultRaid
 var _ json.Marshaler = defaultRaid
 var _ json.Unmarshaler = &defaultRaid
 var _ fmt.Stringer = defaultRaid
+var _ encoding.TextMarshaler = defaultRaid
+var _ encoding.TextUnmarshaler = &defaultRaid
 
 // Raid is 20 byte identifier.
 // 2 byte prefix -- enough for 3 characters in base32.
